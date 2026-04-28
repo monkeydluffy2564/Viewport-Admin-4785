@@ -119,197 +119,181 @@
             </div>
 
             <!-- SYSTEM STATUS CONTROL -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm">
-                        <i data-lucide="power" class="w-4 h-4 text-slate-500"></i> สถานะระบบวันนี้
-                    </h3>
-                    <span id="admin-system-status-badge" class="text-xs font-bold px-2 py-1 rounded bg-slate-100 text-slate-600">Loading...</span>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="app.handleSetSystemOverride(null)" id="btn-mode-auto" class="py-2 px-1 rounded-lg text-xs font-medium border border-slate-200 hover:bg-slate-50 transition flex flex-col items-center gap-1">
-                        <i data-lucide="calendar-clock" class="w-4 h-4 text-slate-500"></i> อัตโนมัติ (จ-ศ)
-                    </button>
-                    <button onclick="app.handleSetSystemOverride('open')" id="btn-mode-open" class="py-2 px-1 rounded-lg text-xs font-medium border border-green-200 bg-green-50 text-green-700 hover:bg-green-100 transition flex flex-col items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i> บังคับเปิด
-                    </button>
-                    <button onclick="app.handleSetSystemOverride('closed')" id="btn-mode-closed" class="py-2 px-1 rounded-lg text-xs font-medium border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition flex flex-col items-center gap-1">
-                        <i data-lucide="x-circle" class="w-4 h-4"></i> บังคับปิด
-                    </button>
+            <div id="admin-system-status-container" class="bg-white p-4 sm:p-5 rounded-[1.25rem] shadow-sm border border-slate-100 flex items-center justify-between transition-all duration-300 relative overflow-hidden mb-6">
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-slate-200 transition-colors duration-300" id="status-side-bar"></div>
+                
+                <div class="flex items-center gap-3 sm:gap-4 pl-3">
+                    <div id="status-icon-bg" class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 transition-colors duration-300">
+                        <i id="status-icon" data-lucide="power" class="w-6 h-6 text-slate-500 transition-colors duration-300"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <h3 class="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">สถานะแอปพลิเคชันวันนี้</h3>
+                        <div class="flex items-center gap-2">
+                            <p id="admin-system-status-badge" class="text-lg sm:text-xl font-black text-slate-700 leading-none">กำลังโหลด...</p>
+                            <span id="status-pulse" class="relative flex h-2.5 w-2.5 hidden">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-2.5 w-2.5"></span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 			
-			<div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 mb-6">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="font-bold text-slate-700 flex items-center gap-2 text-sm">
-                        <i data-lucide="calendar-clock" class="w-4 h-4 text-slate-500"></i> ตั้งเวลาเปิด/ปิดล่วงหน้า
-                    </h3>
+			<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-emerald-100 flex flex-col items-center justify-center">
+                    <span class="text-[10px] font-bold text-emerald-600 mb-1 uppercase tracking-wider">ตรงเวลา</span>
+                    <span id="stat-present" class="text-2xl font-black text-emerald-700">0</span>
                 </div>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between bg-green-50 p-2 rounded-lg border border-green-100">
-                        <span class="text-green-700 text-xs font-bold"><i data-lucide="check-circle" class="w-3 h-3 inline mr-1"></i>บังคับเปิด (เรียนชดเชย):</span>
-                        <input type="date" id="admin-schedule-open" class="border border-green-200 rounded px-2 py-1 text-xs text-slate-600 focus:outline-none" onchange="app.handleScheduleDate('open', this.value)">
-                    </div>
-                    <div class="flex items-center justify-between bg-red-50 p-2 rounded-lg border border-red-100">
-                        <span class="text-red-700 text-xs font-bold"><i data-lucide="x-circle" class="w-3 h-3 inline mr-1"></i>บังคับปิด (หยุดพิเศษ):</span>
-                        <input type="date" id="admin-schedule-close" class="border border-red-200 rounded px-2 py-1 text-xs text-slate-600 focus:outline-none" onchange="app.handleScheduleDate('close', this.value)">
-                    </div>
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-orange-100 flex flex-col items-center justify-center">
+                    <span class="text-[10px] font-bold text-orange-500 mb-1 uppercase tracking-wider">มาสาย</span>
+                    <span id="stat-late" class="text-2xl font-black text-orange-600">0</span>
+                </div>
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center">
+                    <span class="text-[10px] font-bold text-red-500 mb-1 uppercase tracking-wider">ขาดเรียน</span>
+                    <span id="stat-absent" class="text-2xl font-black text-red-600">0</span>
+                </div>
+                <div class="bg-white p-3 rounded-2xl shadow-sm border border-blue-100 flex flex-col items-center justify-center">
+                    <span class="text-[10px] font-bold text-blue-500 mb-1 uppercase tracking-wider">ลากิจ/ป่วย</span>
+                    <span id="stat-leave" class="text-2xl font-black text-blue-600">0</span>
                 </div>
             </div>
 
             <!-- TODAY CARD -->
-            <div class="bg-white rounded-2xl shadow-lg border border-indigo-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-5 text-white flex justify-between items-start">
-                    <div>
+            <div class="bg-white rounded-[1.5rem] shadow-sm border border-gray-100 overflow-hidden mb-6">
+                <div class="bg-gradient-to-r from-[#3b82f6] to-[#2563eb] p-5 sm:p-6 text-white flex justify-between items-center relative overflow-hidden">
+                    <div class="absolute top-[-20px] right-[-20px] w-24 h-24 bg-white opacity-10 rounded-full blur-xl pointer-events-none"></div>
+                    <div class="relative z-10">
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="bg-white/20 px-2 py-0.5 rounded text-xs font-bold">TODAY</span>
-                            <span class="text-sm opacity-90" id="today-date-display">...</span>
+                            <span class="bg-white/20 px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider backdrop-blur-sm shadow-sm">TODAY</span>
+                            <span class="text-xs sm:text-sm font-medium opacity-90" id="today-date-display">...</span>
                         </div>
-                        <h2 class="text-2xl font-bold" id="today-day-name">วันนี้</h2>
+                        <h2 class="text-2xl sm:text-3xl font-bold" id="today-day-name">วันนี้</h2>
                     </div>
-                    <div class="text-right">
-                        <div class="text-4xl font-bold"><span id="today-checked-in">0</span>/<span id="today-total">0</span></div>
-                        <div class="text-xs opacity-80">มาแล้ว / ทั้งหมด</div>
+                    <div class="text-right relative z-10">
+                        <div class="text-3xl sm:text-4xl font-bold"><span id="today-checked-in">0</span><span class="text-xl sm:text-2xl text-blue-200">/<span id="today-total">0</span></span></div>
+                        <div class="text-[10px] sm:text-xs font-medium text-blue-100">มาแล้ว / ทั้งหมด</div>
                     </div>
                 </div>
                 
-                <!-- Action Bar & Settings -->
-                <div class="bg-indigo-50 p-4 border-b border-indigo-100 space-y-3">
-                    <!-- Row 1: Location & Roster -->
-                    <div class="flex justify-between items-center">
-                        <div class="text-xs text-indigo-600 flex flex-col gap-0.5">
-                            <div class="flex items-center gap-1 font-bold">
-                                <i data-lucide="map-pin" class="w-3 h-3"></i> จุดเช็กชื่อ:
-                            </div>
-                            <span id="admin-location-status" class="font-mono text-[10px] bg-white px-1.5 py-0.5 rounded border border-indigo-100">กำลังโหลด...</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="document.getElementById('modal-rules').classList.remove('hidden')" class="bg-white border border-indigo-200 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-50 flex items-center gap-1">
-                                <i data-lucide="scroll-text" class="w-3 h-3"></i> กฏกติกา
-                            </button>
-                            <button onclick="document.getElementById('modal-add-roster').classList.remove('hidden')" class="bg-white border border-indigo-200 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-50 flex items-center gap-1">
-                                <i data-lucide="users" class="w-3 h-3"></i> รายชื่อ
-                            </button>
-                            <button onclick="app.handleSetTargetLocation()" class="bg-white border border-indigo-200 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-50">ตั้งพิกัด</button>
-							<button onclick="app.openQRScanner()" class="bg-indigo-600 border border-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-indigo-700 flex items-center gap-1 shadow-sm"><i data-lucide="scan" class="w-3 h-3"></i> สแกนรับเด็ก</button>
-							<button onclick="app.openBulkCheckInModal()" class="bg-blue-600 border border-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-700 flex items-center gap-1 shadow-sm"><i data-lucide="users" class="w-3 h-3"></i> เช็กชื่อพร้อมกัน</button>
-                        </div>
-                    </div>
+                <div class="bg-gray-50/30 p-4 sm:p-5 border-b border-gray-100">
                     
-                    <!-- Row 2: Late Time -->
-                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-indigo-200 shadow-sm">
-                        <div class="flex items-center gap-2 text-sm text-slate-600">
-                            <i data-lucide="clock" class="w-4 h-4 text-orange-500"></i>
-                            <span class="font-bold">เวลามาโรงเรียน:</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <input type="time" id="admin-late-time-input" class="border border-slate-300 rounded px-2 py-1 text-sm text-slate-700 focus:outline-none focus:border-indigo-500">
-                            <button onclick="app.handleSetLateTime()" class="bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700">บันทึก</button>
-                        </div>
+                    <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-4">
+                        <button onclick="app.openQRScanner()" class="col-span-2 sm:col-span-1 bg-[#3b82f6] hover:bg-blue-600 text-white px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"><i data-lucide="scan" class="w-4 h-4"></i> สแกนรับเด็ก</button>
+                        <button onclick="app.openBulkCheckInModal()" class="col-span-2 sm:col-span-1 bg-[#10b981] hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95"><i data-lucide="users-2" class="w-4 h-4"></i> เช็กชื่อกลุ่ม</button>
+                        <button onclick="app.openLocationManager()" class="bg-white border border-gray-200 text-gray-700 hover:text-[#3b82f6] hover:border-blue-300 hover:bg-blue-50 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-sm"><i data-lucide="crosshair" class="w-4 h-4"></i> ตั้งพิกัด</button>
+                        <button onclick="document.getElementById('modal-rules').classList.remove('hidden')" class="bg-white border border-gray-200 text-gray-700 hover:text-[#3b82f6] hover:border-blue-300 hover:bg-blue-50 px-3 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-sm"><i data-lucide="scroll-text" class="w-4 h-4"></i> กติกา</button>
                     </div>
 
-                    <!-- Row 3: Radius -->
-                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-indigo-200 shadow-sm">
-                        <div class="flex items-center gap-2 text-sm text-slate-600">
-                            <i data-lucide="ruler" class="w-4 h-4 text-blue-500"></i>
-                            <span class="font-bold">รัศมี (เมตร):</span>
+                    <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm mb-4">
+                        <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
+                            <span class="font-bold">พิกัดเครื่องแอดมิน:</span>
                         </div>
-                        <div class="flex gap-2">
-                            <input type="number" id="admin-radius-input" class="border border-slate-300 rounded px-2 py-1 text-sm text-slate-700 focus:outline-none focus:border-indigo-500 w-20 text-center" placeholder="100">
-                            <button onclick="app.handleSetRadius()" class="bg-indigo-600 text-white px-3 py-1 rounded text-xs hover:bg-indigo-700">บันทึก</button>
-                        </div>
+                        <span id="admin-location-status" class="font-mono text-[10px] sm:text-xs bg-gray-50 text-gray-500 px-2 py-1 rounded-lg border border-gray-200 truncate max-w-[150px] sm:max-w-xs">กำลังโหลด...</span>
                     </div>
 
-                    <!-- Row 4 (New): Dynamic Time Rules -->
-                    <div class="bg-yellow-50 p-2 rounded-lg border border-yellow-200 shadow-sm space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-2 text-sm text-yellow-800 font-bold">
-                                <i data-lucide="settings-2" class="w-4 h-4"></i>
-                                ปรับเวลาอัตโนมัติ:
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                            <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                                <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-500 flex items-center justify-center shrink-0"><i data-lucide="clock" class="w-4 h-4"></i></div>
+                                <span class="font-bold">เวลาสาย:</span>
                             </div>
-                            <div class="flex items-center">
+                            <div class="flex gap-1.5">
+                                <input type="time" id="admin-late-time-input" class="border border-gray-200 bg-gray-50 rounded-lg px-2 py-1 text-xs text-center font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400 w-[75px]">
+                                <button onclick="app.handleSetLateTime()" class="bg-orange-500 text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-orange-600 shadow-sm">บันทึก</button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                            <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                                <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-500 flex items-center justify-center"><i data-lucide="ruler" class="w-4 h-4"></i></div>
+                                <span class="font-bold">รัศมี (เมตร):</span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <input type="number" id="admin-radius-input" class="border border-gray-200 bg-gray-50 rounded-lg px-2 py-1 text-xs text-center font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3b82f6] w-16">
+                                <button onclick="app.handleSetRadius()" class="bg-[#3b82f6] text-white px-2.5 py-1 rounded-lg text-xs font-bold hover:bg-blue-600 shadow-sm">บันทึก</button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col justify-center bg-yellow-50/30 p-3 rounded-xl border border-yellow-200 shadow-sm">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2 text-xs sm:text-sm text-yellow-700">
+                                    <div class="w-8 h-8 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center"><i data-lucide="settings-2" class="w-4 h-4"></i></div>
+                                    <span class="font-bold">ปรับเวลาอัตโนมัติ:</span>
+                                </div>
                                 <label class="inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="admin-dynamic-time-toggle" class="sr-only peer" onchange="app.handleToggleDynamicTime(this.checked)">
-                                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-500"></div>
+                                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-500"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between pl-10">
+                                <span class="text-[10px] sm:text-xs text-gray-500 font-bold">ลดเวลาสูงสุด (นาที):</span>
+                                <div class="flex gap-1.5">
+                                    <input type="number" id="admin-max-penalty-input" class="border border-gray-200 bg-white rounded-lg px-2 py-1 text-xs text-center font-bold text-gray-700 w-12 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                                    <button onclick="app.handleSetMaxPenalty()" class="bg-yellow-500 text-white px-2 py-1 rounded-lg text-[10px] font-bold shadow-sm hover:bg-yellow-600">Set</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                                    <div class="w-7 h-7 rounded-lg bg-pink-100 text-pink-500 flex items-center justify-center"><i data-lucide="image" class="w-3.5 h-3.5"></i></div>
+                                    <span class="font-bold text-xs">เปิดอัปโหลดรูป:</span>
+                                </div>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="admin-profile-upload-toggle" class="sr-only peer" onchange="app.handleToggleProfileUpload(this.checked)">
+                                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-pink-500"></div>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                                    <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-500 flex items-center justify-center"><i data-lucide="flask-conical" class="w-3.5 h-3.5"></i></div>
+                                    <span class="font-bold text-xs">โหมดทดสอบ (PC):</span>
+                                </div>
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="admin-testmode-toggle" class="sr-only peer" onchange="app.handleToggleTestMode(this.checked)">
+                                    <div class="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-500"></div>
                                 </label>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-slate-600">ลดเวลาสูงสุด (นาที):</span>
-                            <div class="flex gap-1">
-                                <input type="number" id="admin-max-penalty-input" class="w-12 border border-slate-300 rounded px-1 text-center focus:outline-none focus:border-yellow-500" placeholder="5" value="5">
-                                <button onclick="app.handleSetMaxPenalty()" class="bg-yellow-600 text-white px-2 py-0.5 rounded hover:bg-yellow-700">Set</button>
-                            </div>
-                        </div>
-                    </div>
-					
-					<div class="flex items-center justify-between bg-pink-50 p-2 rounded-lg border border-pink-200 shadow-sm mt-2 mb-2">
-                        <div class="flex items-center gap-2 text-sm text-pink-700">
-                            <i data-lucide="image" class="w-4 h-4"></i>
-                            <span class="font-bold">เปิดให้อัปโหลดรูปโปรไฟล์:</span>
-                        </div>
-                        <div class="flex items-center">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="admin-profile-upload-toggle" class="sr-only peer" onchange="app.handleToggleProfileUpload(this.checked)">
-                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-pink-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-600"></div>
-                            </label>
-                        </div>
+
                     </div>
 
-                    <!-- Row 5: Test Mode -->
-                    <div class="flex items-center justify-between bg-purple-50 p-2 rounded-lg border border-purple-200 shadow-sm">
-                        <div class="flex items-center gap-2 text-sm text-purple-700">
-                            <i data-lucide="flask-conical" class="w-4 h-4"></i>
-                            <span class="font-bold">โหมดทดสอบ (PC):</span>
-                        </div>
-                        <div class="flex items-center">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="admin-testmode-toggle" class="sr-only peer" onchange="app.handleToggleTestMode(this.checked)">
-                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <!-- Row 6: Full Reset (New) -->
-                    <div class="flex items-center justify-between bg-red-50 p-2 rounded-lg border border-red-200 shadow-sm mt-2">
-                        <div class="flex items-center gap-2 text-sm text-red-700">
+                    <div class="mt-3 flex items-center justify-between bg-red-50/50 p-3 rounded-xl border border-red-100 shadow-sm">
+                        <div class="flex items-center gap-2 text-xs sm:text-sm text-red-600">
                             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                             <span class="font-bold">ล้างค่าทั้งหมด (เริ่มใหม่):</span>
                         </div>
-                        <button onclick="app.handleFullReset()" class="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 shadow-sm">
-                            <i data-lucide="trash-2" class="w-3 h-3 inline mr-1"></i> ล้างค่า
+                        <button onclick="app.handleFullReset()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm transition-colors flex items-center gap-1">
+                            <i data-lucide="trash-2" class="w-3 h-3"></i> ล้างค่า
                         </button>
                     </div>
+
                 </div>
 
-                <div class="flex border-b border-slate-200 bg-slate-50 overflow-x-auto no-scrollbar">
-                    <button onclick="app.switchAdminTab('list')" id="tab-btn-list" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 transition-colors">เรียงตามสถานะ</button>
-                    <button onclick="app.switchAdminTab('rank')" id="tab-btn-rank" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">อันดับวันนี้</button>
-                    <button onclick="app.switchAdminTab('average')" id="tab-btn-average" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">สถิติเวลาเฉลี่ย</button>
-					<button onclick="app.switchAdminTab('worst')" id="tab-btn-worst" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-red-500 hover:text-red-700 border-b-2 border-transparent transition-colors">เฝ้าระวัง (สาย/ขาด)</button>
-					<button onclick="app.switchAdminTab('today-late')" id="tab-btn-today-late" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-orange-600 border-b-2 border-transparent transition-colors">ขาด/ลา/สาย วันนี้</button>
+                <div class="flex border-b border-gray-100 bg-white overflow-x-auto custom-scrollbar">
+                    <button onclick="app.switchAdminTab('list')" id="tab-btn-list" class="shrink-0 px-4 py-3.5 text-xs sm:text-sm font-bold text-[#3b82f6] border-b-2 border-[#3b82f6] transition-colors whitespace-nowrap">เรียงตามสถานะ</button>
+                    <button onclick="app.switchAdminTab('rank')" id="tab-btn-rank" class="shrink-0 px-4 py-3.5 text-xs sm:text-sm font-bold text-gray-400 hover:text-gray-700 border-b-2 border-transparent transition-colors whitespace-nowrap">อันดับวันนี้</button>
+                    <button onclick="app.switchAdminTab('average')" id="tab-btn-average" class="shrink-0 px-4 py-3.5 text-xs sm:text-sm font-bold text-gray-400 hover:text-gray-700 border-b-2 border-transparent transition-colors whitespace-nowrap">สถิติเวลาเฉลี่ย</button>
+                    <button onclick="app.switchAdminTab('worst')" id="tab-btn-worst" class="shrink-0 px-4 py-3.5 text-xs sm:text-sm font-bold text-red-400 hover:text-red-600 border-b-2 border-transparent transition-colors whitespace-nowrap">เฝ้าระวัง (สาย/ขาด)</button>
+                    <button onclick="app.switchAdminTab('today-late')" id="tab-btn-today-late" class="shrink-0 px-4 py-3.5 text-xs sm:text-sm font-bold text-orange-400 hover:text-orange-600 border-b-2 border-transparent transition-colors whitespace-nowrap">ขาด/ลา/สาย วันนี้</button>
+                </div>
+				
+				<div id="admin-ranking-filter" class="bg-white px-4 py-2 border-b border-gray-100 flex justify-end hidden animate-fade-in">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-gray-500"><i data-lucide="filter" class="w-3 h-3 inline mb-0.5"></i> กรองห้อง:</span>
+                        <select id="admin-room-filter" onchange="app.changeRankingFilter(this.value)" class="bg-gray-50 border border-gray-200 text-xs font-bold text-[#3b82f6] rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-gray-100 transition-colors shadow-sm"></select>
+                    </div>
                 </div>
 
-                <div class="p-0 relative">
-                    <div id="today-users-list" class="divide-y divide-slate-100 max-h-[500px] overflow-y-auto pb-4"></div>
-                    
-                    <div id="today-ranking-list" class="hidden max-h-[500px] overflow-y-auto bg-slate-50/50 p-4 pb-8">
-                        <div id="podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
-                        <div id="ranking-others-container" class="mt-8 space-y-2 px-2"></div>
-                    </div>
-
-                    <div id="average-stats-list" class="hidden max-h-[500px] overflow-y-auto bg-slate-50/50 p-4 pb-8">
-                        <div id="avg-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
-                        <div id="avg-others-container" class="mt-8 space-y-2 px-2"></div>
-                    </div>
-					<div id="worst-stats-list" class="hidden max-h-[500px] overflow-y-auto bg-red-50/30 p-4 pb-8">
-                        <div id="worst-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
-                        <div id="worst-others-container" class="mt-8 space-y-2 px-2"></div>
-                    </div>
-					<div id="today-late-list" class="hidden max-h-[500px] overflow-y-auto bg-orange-50/30 p-4 pb-8">
-    <div id="late-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
-    <div id="late-others-container" class="mt-8 space-y-2 px-2"></div>
-</div>
+                <div class="p-0 relative bg-gray-50/30">
+                    <div id="today-users-list" class="divide-y divide-gray-100 max-h-[500px] overflow-y-auto pb-4"></div>
+                    <div id="today-ranking-list" class="hidden max-h-[500px] overflow-y-auto p-4 pb-8"><div id="podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div><div id="ranking-others-container" class="mt-8 space-y-2 px-2"></div></div>
+                    <div id="average-stats-list" class="hidden max-h-[500px] overflow-y-auto p-4 pb-8"><div id="avg-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div><div id="avg-others-container" class="mt-8 space-y-2 px-2"></div></div>
+                    <div id="worst-stats-list" class="hidden max-h-[500px] overflow-y-auto p-4 pb-8"><div id="worst-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div><div id="worst-others-container" class="mt-8 space-y-2 px-2"></div></div>
+                    <div id="today-late-list" class="hidden max-h-[500px] overflow-y-auto p-4 pb-8"><div id="late-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div><div id="late-others-container" class="mt-8 space-y-2 px-2"></div></div>
                 </div>
             </div>
 
@@ -463,19 +447,6 @@
     </div>
 	</div>
 
-    <!-- MODAL ADD ROSTER -->
-    <div id="modal-add-roster" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
-            <h3 class="text-lg font-bold text-slate-800 mb-2">เพิ่มรายชื่อพนักงาน</h3>
-            <p class="text-sm text-slate-500 mb-4">ใส่ชื่อ-นามสกุล (บรรทัดละ 1 ชื่อ)</p>
-            <textarea id="roster-textarea" rows="5" class="w-full border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:border-indigo-500" placeholder="สมชาย ใจดี&#10;สมหญิง รักเรียน&#10;มานะ อดทน"></textarea>
-            <div class="flex gap-2 mt-4">
-                <button onclick="document.getElementById('modal-add-roster').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-lg text-sm">ยกเลิก</button>
-                <button onclick="app.handleAddRoster()" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-sm hover:bg-indigo-700">บันทึก</button>
-            </div>
-        </div>
-    </div>
-
     <!-- MODAL EDIT STATUS -->
     <div id="modal-status-edit" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-xs p-6 text-center">
@@ -557,45 +528,48 @@
             </div>
         </div>
         <main class="flex-1 p-6 space-y-4">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                <div class="flex items-center gap-4 border-b border-slate-50 pb-3 mb-3">
+            <div class="bg-white p-5 sm:p-6 rounded-[1.5rem] shadow-sm border border-gray-100 mb-4 relative overflow-hidden">
+                <div class="flex items-center gap-4 border-b border-gray-50 pb-4 mb-4">
                     <div class="relative group shrink-0">
-                        <img id="user-avatar-display" src="https://ui-avatars.com/api/?name=User&background=random" class="w-14 h-14 rounded-full object-cover border-2 border-indigo-100 shadow-sm">
-                        <button id="btn-profile-upload" onclick="document.getElementById('profile-upload-input').click()" class="absolute bottom-0 right-0 bg-indigo-600 text-white rounded-full p-1 shadow hover:bg-indigo-700 transition">
-                            <i data-lucide="camera" class="w-3 h-3"></i>
+                        <img id="user-avatar-display" src="https://ui-avatars.com/api/?name=User&background=random" class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-4 border-blue-50 shadow-sm">
+                        <button id="btn-profile-upload" onclick="document.getElementById('profile-upload-input').click()" class="absolute bottom-0 right-0 bg-[#3b82f6] text-white rounded-full p-1.5 shadow-md hover:bg-blue-600 transition border-2 border-white">
+                            <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                         </button>
                         <input type="file" id="profile-upload-input" class="hidden" accept="image/*" onchange="app.handleProfileUpload(this)">
                     </div>
                     <div class="flex flex-col min-w-0">
-                        <span class="text-slate-500 text-xs">ผู้ใช้งาน</span>
-                        <span id="user-name-display" class="font-bold text-slate-800 text-lg truncate">...</span>
+                        <span class="text-gray-400 text-[10px] sm:text-xs font-bold uppercase tracking-wider">ผู้ใช้งาน</span>
+                        <span id="user-name-display" class="font-black text-gray-800 text-lg sm:text-xl truncate">...</span>
                     </div>
                 </div>
-                <!-- ปรับ Grid เป็น 3 คอลัมน์ -->
-                <div class="grid grid-cols-3 gap-3">
-                    <div class="bg-slate-50 p-3 rounded-lg text-center">
-                        <div class="text-[10px] text-slate-400 mb-1">ลำดับที่</div>
-                        <div id="user-rank-display" class="font-bold text-slate-800 text-lg">-</div>
+                
+                <div class="grid grid-cols-3 gap-2 sm:gap-3">
+                    <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100/50 text-center shadow-sm">
+                        <div class="text-[10px] sm:text-xs text-blue-500 font-bold mb-1">ลำดับเช็กชื่อ</div>
+                        <div id="user-rank-display" class="font-black text-blue-700 text-lg sm:text-2xl">-</div>
                     </div>
-                    <div class="bg-slate-50 p-3 rounded-lg text-center">
-                        <div class="text-[10px] text-slate-400 mb-1">เวลาเข้า</div>
-                        <div id="user-time-display" class="font-bold text-slate-800 text-lg">-</div>
+                    <div class="bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/50 text-center shadow-sm">
+                        <div class="text-[10px] sm:text-xs text-emerald-500 font-bold mb-1">เวลาเข้า</div>
+                        <div id="user-time-display" class="font-black text-emerald-700 text-lg sm:text-2xl">-</div>
                     </div>
-                    <div class="bg-slate-50 p-3 rounded-lg text-center">
-                        <div class="text-[10px] text-slate-400 mb-1">ระยะห่าง</div>
-                        <div id="user-distance-display" class="font-bold text-slate-800 text-lg">-</div>
+                    <div class="bg-orange-50/50 p-3 rounded-xl border border-orange-100/50 text-center shadow-sm">
+                        <div class="text-[10px] sm:text-xs text-orange-500 font-bold mb-1">ระยะห่าง</div>
+                        <div id="user-distance-display" class="font-black text-orange-700 text-lg sm:text-2xl">-</div>
                     </div>
                 </div>
-                <!-- แสดงพิกัดปัจจุบัน -->
-                <div class="mt-3 pt-2 border-t border-slate-50 flex justify-between items-center text-[10px]">
-    <span class="text-slate-400">พิกัดของคุณ:</span>
-    <div class="flex items-center gap-2">
-        <span class="font-mono text-slate-500 bg-slate-50 px-1.5 py-0.5 rounded" id="user-current-coords">กำลังหา...</span>
-        <button onclick="app.stopGPS(); setTimeout(() => app.startGPS(), 500);" class="bg-blue-100 text-blue-600 p-1 rounded hover:bg-blue-200" title="ค้นหาพิกัดใหม่">
-            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-        </button>
-    </div>
-</div>
+                
+                <div class="mt-4 pt-4 border-t border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <span class="text-[10px] sm:text-xs font-bold text-gray-400 flex items-center gap-1"><i data-lucide="crosshair" class="w-3 h-3"></i> พิกัดปัจจุบันของคุณ:</span>
+                    <div class="flex items-center gap-2 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100 w-full sm:w-auto justify-between sm:justify-start">
+                        <span class="font-mono text-[10px] sm:text-xs text-gray-600 font-bold" id="user-current-coords">กำลังหา...</span>
+                        <button onclick="app.stopGPS(); setTimeout(() => app.startGPS(), 500);" class="bg-blue-100 text-blue-600 px-2 py-1 rounded-md hover:bg-blue-200 transition-colors shadow-sm text-[10px] font-bold flex items-center gap-1" title="ค้นหาพิกัดใหม่">
+                            <i data-lucide="refresh-cw" class="w-3 h-3"></i> อัปเดตพิกัด
+                        </button>
+                    </div>
+                </div>
+				
+				<div id="delegated-scanner-container"></div>
+				
             </div>
 
             <div id="user-penalty-card" class="hidden bg-orange-50 border border-orange-200 p-5 rounded-2xl shadow-sm text-center animate-pulse">
@@ -606,14 +580,20 @@
                 <p id="user-penalty-sub" class="text-orange-600 text-xs mt-1">...</p>
             </div>
 
-            <!-- WHO IS HERE -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                 <div class="flex border-b border-slate-100 bg-slate-50 overflow-x-auto" style="scrollbar-width: none;">
                     <button onclick="app.switchUserTab('peers')" id="user-tab-btn-peers" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-indigo-600 border-b-2 border-indigo-600 transition-colors">เช็กชื่อวันนี้</button>
                     <button onclick="app.switchUserTab('rank')" id="user-tab-btn-rank" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">อันดับวันนี้</button>
                     <button onclick="app.switchUserTab('average')" id="user-tab-btn-average" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">สถิติเวลาเฉลี่ย</button>
-					<button onclick="app.switchUserTab('worst')" id="user-tab-btn-worst" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">เฝ้าระวัง (สาย/ขาด)</button>
-					<button onclick="app.switchUserTab('today-late')" id="user-tab-btn-today-late" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-orange-600 border-b-2 border-transparent transition-colors">ขาด/ลา/สาย วันนี้</button>
+                    <button onclick="app.switchUserTab('worst')" id="user-tab-btn-worst" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">เฝ้าระวัง (สาย/ขาด)</button>
+                    <button onclick="app.switchUserTab('today-late')" id="user-tab-btn-today-late" class="shrink-0 px-4 py-3 text-xs sm:text-sm font-bold text-orange-600 border-b-2 border-transparent transition-colors">ขาด/ลา/สาย วันนี้</button>
+                </div>
+				
+				<div id="user-ranking-filter" class="bg-slate-50 px-4 py-2 border-b border-slate-100 flex justify-end hidden animate-fade-in">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500"><i data-lucide="filter" class="w-3 h-3 inline mb-0.5"></i> กรองห้อง:</span>
+                        <select id="user-room-filter" onchange="app.changeRankingFilter(this.value)" class="bg-white border border-slate-200 text-xs font-bold text-indigo-600 rounded-lg px-2 py-1 outline-none cursor-pointer hover:bg-slate-50 transition-colors shadow-sm"></select>
+                    </div>
                 </div>
                 
                 <div class="p-0 relative">
@@ -632,14 +612,16 @@
                         <div id="user-avg-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
                         <div id="user-avg-others-container" class="mt-8 space-y-2 px-2"></div>
                     </div>
-					<div id="user-view-worst" class="hidden max-h-[500px] overflow-y-auto bg-red-50/30 p-4 pb-8">
+
+                    <div id="user-view-worst" class="hidden max-h-[500px] overflow-y-auto bg-red-50/30 p-4 pb-8">
                         <div id="user-worst-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
                         <div id="user-worst-others-container" class="mt-8 space-y-2 px-2"></div>
                     </div>
-					<div id="user-view-today-late" class="hidden max-h-[500px] overflow-y-auto bg-orange-50/30 p-4 pb-8">
-    <div id="user-late-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
-    <div id="user-late-others-container" class="mt-8 space-y-2 px-2"></div>
-</div>
+
+                    <div id="user-view-today-late" class="hidden max-h-[500px] overflow-y-auto bg-orange-50/30 p-4 pb-8">
+                        <div id="user-late-podium-container" class="flex flex-wrap justify-center items-end gap-x-2 sm:gap-x-4 gap-y-12 pt-16 w-full mx-auto"></div>
+                        <div id="user-late-others-container" class="mt-8 space-y-2 px-2"></div>
+                    </div>
                 </div>
             </div>
 
@@ -725,6 +707,25 @@
             <div class="pt-4 border-t border-slate-100 flex gap-2">
                 <button onclick="document.getElementById('modal-bulk-checkin').classList.add('hidden')" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-lg text-sm font-bold">ยกเลิก</button>
                 <button onclick="app.submitBulkCheckIn()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg text-sm font-bold hover:bg-blue-700 shadow-md">ยืนยันเช็กชื่อ</button>
+            </div>
+        </div>
+    </div>
+	
+	<div id="modal-location-manager" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-lg p-6 flex flex-col max-h-[90vh] animate-slide-up">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-4 shrink-0">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2"><i data-lucide="map-pinned" class="w-6 h-6 text-blue-600"></i> จัดการพิกัดจุดเช็คชื่อ</h3>
+                <button onclick="document.getElementById('modal-location-manager').classList.add('hidden')" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            
+            <div class="overflow-y-auto custom-scrollbar pr-2 flex-1 space-y-6" id="location-manager-content">
+                </div>
+            
+            <div class="pt-4 mt-4 border-t border-gray-100 flex gap-2 shrink-0">
+                <button onclick="app.removeLocationForSelected()" class="px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl font-bold transition-colors">ล้างพิกัด</button>
+                <button id="btn-save-loc" onclick="app.saveLocationForSelected()" class="flex-1 py-3 text-white font-bold rounded-xl shadow-sm transition-all active:scale-95 bg-[#3b82f6] hover:bg-blue-600 flex items-center justify-center gap-2">
+                    <i data-lucide="crosshair" class="w-5 h-5"></i> ตั้งพิกัดปัจจุบันให้ห้องที่เลือก
+                </button>
             </div>
         </div>
     </div>
